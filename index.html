@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Peco Lens – Technician Command Suite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+<!-- LOGIN LAYER -->
+<div id="loginLayer" class="login-layer active">
+  <div class="login-card">
+    <h1 class="app-title">Peco Lens</h1>
+    <p class="app-subtitle">Technician Command Suite</p>
+
+    <div class="login-field">
+      <label>Username</label>
+      <input id="loginUsername" type="text" autocomplete="off" />
+    </div>
+
+    <div class="login-field">
+      <label>Passcode</label>
+      <input id="loginPasscode" type="password" autocomplete="off" />
+    </div>
+
+    <button class="primary-button" onclick="login()">Enter</button>
+    <p id="loginError" class="login-error hidden"></p>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" class="app-shell hidden">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="app-logo-dot"></div>
+    <div class="app-header-title">Peco Lens • Command Suite</div>
+    <button class="header-chip" onclick="toggleHighContrast()">HC</button>
+  </header>
+
+  <!-- MAIN LAYER TRACK -->
+  <main class="app-main">
+    <div id="layerTrack" class="layer-track">
+
+      <!-- ========================================================= -->
+      <!-- LAYER 0 — LENS (8 LENSES) -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="lens">
+        <div class="card-track">
+
+          <!-- AR Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>AR Lens</h2>
+              <p>Live overlays for components, faults, and safety zones.</p>
+            </header>
+            <div class="card-body">
+              <video id="cameraFeed" class="lens-video" autoplay playsinline></video>
+              <button class="primary-button" onclick="captureAndAnalyze('ar')">Analyze with AR Lens</button>
+              <div id="lensAnalysisAR" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- AI Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>AI Lens</h2>
+              <p>General AI vision for faults, wear, and safety.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('ai')">Analyze with AI Lens</button>
+              <div id="lensAnalysisAI" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- Poultry Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Poultry Lens</h2>
+              <p>Cut quality, trim, and grading for poultry lines.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('poultry')">Analyze Poultry Cut</button>
+              <div id="lensAnalysisPoultry" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- MegaJet Cut Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>MegaJet Cut Lens</h2>
+              <p>Waterjet cut quality, jet alignment, and nozzle wear.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('megajet')">Analyze MegaJet Cut</button>
+              <div id="lensAnalysisMegaJet" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- Thermal Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Thermal Lens</h2>
+              <p>Heat patterns, hotspots, and thermal anomalies.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('thermal')">Analyze Thermal Pattern</button>
+              <div id="lensAnalysisThermal" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- Calibration Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Calibration Lens</h2>
+              <p>Alignment, calibration targets, and reference checks.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('calibration')">Run Calibration Check</button>
+              <div id="lensAnalysisCalibration" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- Vision System Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Vision System Lens</h2>
+              <p>Camera diagnostics, focus, exposure, and health.</p>
+            </header>
+            <div class="card-body">
+              <button class="primary-button" onclick="captureAndAnalyze('vision')">Analyze Vision System</button>
+              <div id="lensAnalysisVision" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- 3D Lens -->
+          <article class="card">
+            <header class="card-header">
+              <h2>3D Lens</h2>
+              <p>3D component viewer for assemblies and callouts.</p>
+            </header>
+            <div class="card-body">
+              <model-viewer src="component-example.glb"
+                            camera-controls auto-rotate
+                            style="width:100%;height:260px;background:#020617;border-radius:12px;">
+              </model-viewer>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 1 — TOOLS -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="tools">
+        <div class="card-track">
+
+          <!-- Diagnostics AI -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Diagnostics AI</h2>
+              <p>Root-cause analysis and corrective actions.</p>
+            </header>
+            <div class="card-body">
+              <textarea id="diagnosticsInput" class="text-area" placeholder="Describe symptoms, alarms, behavior..."></textarea>
+              <button class="primary-button" onclick="runDiagnostics()">Run Diagnostics</button>
+              <div id="diagnosticsOutput" class="lens-analysis"></div>
+            </div>
+          </article>
+
+          <!-- Gallery -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Gallery</h2>
+              <p>AR captures, vision snapshots, and failure images.</p>
+            </header>
+            <div class="card-body">
+              <div id="galleryList" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- Poultry Cuts Gallery -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Poultry Cuts</h2>
+              <p>Cut images, grading, and defect classification.</p>
+            </header>
+            <div class="card-body">
+              <div id="poultryGallery" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- Parts Lookup -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Parts</h2>
+              <p>Component lookup linked to 3D and PM tasks.</p>
+            </header>
+            <div class="card-body">
+              <input id="partsSearch" class="text-area small" placeholder="Search by part, system, or component..." />
+              <div id="partsResults" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- Vision Panel -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Vision Panel</h2>
+              <p>Camera tuning, focus, exposure, and diagnostics.</p>
+            </header>
+            <div class="card-body">
+              <div id="visionPanel" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- 3D Viewer -->
+          <article class="card">
+            <header class="card-header">
+              <h2>3D Viewer</h2>
+              <p>Standalone 3D model viewer for components.</p>
+            </header>
+            <div class="card-body">
+              <model-viewer src="component-example.glb"
+                            camera-controls auto-rotate
+                            style="width:100%;height:260px;background:#020617;border-radius:12px;">
+              </model-viewer>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 2 — MAINTENANCE -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="maintenance">
+        <div class="card-track">
+
+          <!-- Maintenance List -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Maintenance List</h2>
+              <p>Daily, weekly, and monthly PM tasks.</p>
+            </header>
+            <div class="card-body">
+              <div class="menu-grid">
+                <div>
+                  <label>System</label>
+                  <input id="maintFilterSystem" class="text-area small" />
+                </div>
+                <div>
+                  <label>Machine</label>
+                  <input id="maintFilterMachine" class="text-area small" />
+                </div>
+              </div>
+              <div id="maintenanceList" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- Inspection Guides -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Inspection Guides</h2>
+              <p>Deep-dive technician procedures with AR/3D references.</p>
+            </header>
+            <div class="card-body">
+              <div id="inspectionGuides" class="scroll-box"></div>
+            </div>
+          </article>
+
+          <!-- Failure Analysis -->
+          <article class="card">
+            <header class="card-header">
+              <h2>Failure Analysis</h2>
+              <p>Failure modes, causes, and recommended actions.</p>
+            </header>
+            <div class="card-body">
+              <div id="failureAnalysis" class="scroll-box"></div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 3 — PM ENGINE -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="pm">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>PM Engine</h2>
+              <p>Task generator driven by Matrix Log.</p>
+            </header>
+            <div class="card-body">
+              <div class="menu-grid">
+                <div>
+                  <label>System</label>
+                  <input id="pmFilterSystem" class="text-area small" />
+                </div>
+                <div>
+                  <label>Machine</label>
+                  <input id="pmFilterMachine" class="text-area small" />
+                </div>
+                <div>
+                  <label>Frequency</label>
+                  <input id="pmFilterFrequency" class="text-area small" />
+                </div>
+                <div>
+                  <label>Severity</label>
+                  <input id="pmFilterSeverity" class="text-area small" />
+                </div>
+              </div>
+              <div id="pmList" class="scroll-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 4 — MATRIX LOG -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="matrix">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Matrix Log</h2>
+              <p>Hidden brain for PM, training, and failure analysis.</p>
+            </header>
+            <div class="card-body">
+              <div class="scroll-box">
+                <table class="matrix-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>System</th>
+                      <th>Machine</th>
+                      <th>Lane</th>
+                      <th>Cutter</th>
+                      <th>SubAsm</th>
+                      <th>Component</th>
+                      <th>PM Task</th>
+                      <th>Frequency</th>
+                      <th>Severity</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="matrixLogBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 5 — TRAINING -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="training">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Training Modules</h2>
+              <p>AI-generated OEM-grade technician training.</p>
+            </header>
+            <div class="card-body">
+              <div class="menu-grid">
+                <div>
+                  <label>System</label>
+                  <select id="trainingSystem" class="text-area small">
+                    <option value="MegaJet">MegaJet</option>
+                    <option value="Grasselli">Grasselli</option>
+                    <option value="Drive Banks">Drive Banks</option>
+                    <option value="Encoders">Encoders</option>
+                    <option value="Intensifiers">Intensifiers</option>
+                    <option value="Vision Systems">Vision Systems</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Topic</label>
+                  <input id="trainingTopic" class="text-area small" placeholder="Blade alignment, belt tracking..." />
+                </div>
+              </div>
+              <button class="primary-button" onclick="generateTrainingModule()">Generate Training Module</button>
+              <div id="trainingContent" class="scroll-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 6 — MESSAGING -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="messaging">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Messaging</h2>
+              <p>Technician-to-technician communication.</p>
+            </header>
+            <div class="card-body">
+              <div id="chatLog" class="chat-log"></div>
+              <textarea id="chatInput" class="text-area small" placeholder="Type a message..."></textarea>
+              <button class="primary-button" onclick="sendUserMessage()">Send</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 7 — PROFILES -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="profiles">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Profiles</h2>
+              <p>Technician and machine profiles.</p>
+            </header>
+            <div class="card-body">
+              <div class="menu-grid">
+                <div>
+                  <label>Technician Name</label>
+                  <input id="profileName" class="text-area small" />
+                </div>
+                <div>
+                  <label>Location</label>
+                  <input id="profileLocation" class="text-area small" />
+                </div>
+              </div>
+              <textarea id="profileNotes" class="text-area" placeholder="Notes, role, permissions..."></textarea>
+              <button class="primary-button" onclick="saveProfile()">Save Profile</button>
+              <button class="secondary-button" onclick="clearProfiles()">Clear All Profiles</button>
+              <div id="profilesList" class="scroll-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 8 — HISTORY -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="history">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>History</h2>
+              <p>Lens, diagnostics, PM, and training history.</p>
+            </header>
+            <div class="card-body">
+              <button class="secondary-button" onclick="clearHistory()">Clear History</button>
+              <div id="historyList" class="scroll-box"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 9 — SETTINGS -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="settings">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Settings</h2>
+              <p>User management, permissions, and display options.</p>
+            </header>
+            <div class="card-body">
+              <div class="menu-grid">
+                <div>
+                  <label>New Username</label>
+                  <input id="newUserName" class="text-area small" />
+                </div>
+                <div>
+                  <label>New Passcode</label>
+                  <input id="newUserPass" class="text-area small" />
+                </div>
+              </div>
+              <button class="primary-button" onclick="addUser()">Add User</button>
+              <button class="secondary-button" onclick<button class="secondary-button" onclick="removeUser()">Remove User</button>
+              <div id="userList" class="scroll-box"></div>
+
+              <hr class="divider" />
+
+              <h3>Display</h3>
+              <button class="primary-button" onclick="toggleHighContrast()">Toggle High Contrast</button>
+
+              <hr class="divider" />
+
+              <h3>PWA</h3>
+              <button class="secondary-button" onclick="installPWA()">Install App</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ========================================================= -->
+      <!-- LAYER 10 — DASHBOARD / ANALYTICS -->
+      <!-- ========================================================= -->
+      <section class="layer" data-layer-key="dashboard">
+        <div class="card-track">
+          <article class="card">
+            <header class="card-header">
+              <h2>Dashboard</h2>
+              <p>Analytics overview for failures, PM, and performance.</p>
+            </header>
+            <div class="card-body">
+              <div class="analytics-grid">
+                <div class="analytics-box">
+                  <h3>Failure Trends</h3>
+                  <div id="analyticsFailures" class="analytics-chart"></div>
+                </div>
+
+                <div class="analytics-box">
+                  <h3>Downtime</h3>
+                  <div id="analyticsDowntime" class="analytics-chart"></div>
+                </div>
+
+                <div class="analytics-box">
+                  <h3>Machine Performance</h3>
+                  <div id="analyticsPerformance" class="analytics-chart"></div>
+                </div>
+
+                <div class="analytics-box">
+                  <h3>PM Completion</h3>
+                  <div id="analyticsPM" class="analytics-chart"></div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </div> <!-- END layerTrack -->
+  </main>
+</div> <!-- END appShell -->
+
+<script src="app.js"></script>
+</body>
+</html>
